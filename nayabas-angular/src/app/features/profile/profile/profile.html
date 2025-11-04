@@ -1,0 +1,113 @@
+<div class="container py-5">
+  <h2 class="mb-4 text-center fw-bold">My Profile</h2>
+
+  <div *ngIf="loading" class="d-flex justify-content-center align-items-center my-5">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger text-center">{{ error }}</div>
+
+  <div *ngIf="!loading && user" class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0 rounded-4 profile-card">
+        <div class="card-body p-4">
+
+          <form (ngSubmit)="onSubmit()" #profileForm="ngForm" enctype="multipart/form-data">
+
+            <!-- Profile Image -->
+            <div class="text-center mb-4">
+              <div class="profile-image-card">
+                <img *ngIf="previewUrl; else defaultAvatar" [src]="previewUrl" alt="Profile Picture">
+                <ng-template #defaultAvatar>
+                  <div class="default-avatar">
+                    <i class="bi bi-person"></i>
+                  </div>
+                </ng-template>
+              </div>
+              <div class="mt-2">
+                <input type="file" (change)="onFileSelected($event)"
+                  class="form-control form-control-sm w-75 mx-auto" />
+              </div>
+            </div>
+
+            <!-- Editable Fields -->
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input [(ngModel)]="user.fullName" name="fullName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input [value]="user.email" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input [(ngModel)]="user.phoneNumber" name="phoneNumber" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <input [(ngModel)]="user.addressLine1" name="addressLine1" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">New Password</label>
+              <input [(ngModel)]="password" name="password" class="form-control" type="password" />
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+              <label class="form-label">Role</label>
+              <input [value]="user.role" class="form-control" readonly />
+            </div>
+
+            <!-- ID Proof & House Ownership Proof -->
+            <div class="row mb-4 g-3">
+              <div class="col-6 text-center">
+                <label class="form-label d-block">ID Proof</label>
+                <div class="proof-card">
+                  <img *ngIf="user?.idProofBase64" [src]="'data:image/png;base64,'+user.idProofBase64" alt="ID Proof">
+                </div>
+              </div>
+              <div class="col-6 text-center">
+                <label class="form-label d-block">House Ownership Proof</label>
+                <div class="proof-card">
+                  <img *ngIf="user?.houseOwnershipProofBase64"
+                    [src]="'data:image/png;base64,'+user.houseOwnershipProofBase64" alt="House Proof">
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info small">
+              <strong>Note:</strong> Email, Role, ID Proof, and House Ownership Proof cannot be changed.
+              Contact admin for updates.
+            </div>
+
+            <!-- <div class="text-center">
+              <button class="btn btn-primary px-5" [disabled]="saving">Save Changes</button>
+            </div> -->
+
+<div class="text-center mt-4">
+  <button
+    class="btn-gradient"
+    type="submit"
+    [disabled]="saving"
+  >
+    <ng-container *ngIf="saving; else saveText">
+      <span class="spinner"></span>
+      <span class="ms-2">Saving...</span>
+    </ng-container>
+    <ng-template #saveText>
+      <i class="bi bi-save me-2"></i>
+      Save Changes
+    </ng-template>
+  </button>
+</div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

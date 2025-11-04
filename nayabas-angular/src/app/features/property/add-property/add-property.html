@@ -1,0 +1,109 @@
+<div class="add-property-container py-5">
+  <h2 class="mb-4 text-center fw-bold gradient-text animate-header">
+    {{ isEditMode ? '✏️ Edit Property' : '🏠 Add New Property' }}
+  </h2>
+
+  <form
+    (ngSubmit)="onSubmit(propertyForm)"
+    #propertyForm="ngForm"
+    class="property-card shadow-lg border-0 rounded-4 p-4 mx-auto fade-in"
+    novalidate
+  >
+    <div class="section-header mb-3">🏠 Basic Details</div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Title</label>
+        <input [(ngModel)]="property.title" name="title" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Price (NPR)</label>
+        <input [(ngModel)]="property.price" name="price" type="number" class="form-control" required />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Description</label>
+        <textarea [(ngModel)]="property.description" name="description" class="form-control" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="section-header mt-4 mb-3">📍 Location</div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">City</label>
+        <input [(ngModel)]="property.city" name="city" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">District</label>
+        <input [(ngModel)]="property.district" name="district" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">House Number</label>
+        <input [(ngModel)]="property.houseNumber" name="houseNumber" class="form-control" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Address</label>
+        <input [(ngModel)]="property.address" name="address" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Latitude</label>
+        <input [(ngModel)]="property.latitude" name="latitude" type="number" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Longitude</label>
+        <input [(ngModel)]="property.longitude" name="longitude" type="number" class="form-control" />
+      </div>
+    </div>
+
+    <div class="section-header mt-4 mb-3">🛏️ Property Features</div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Bedrooms</label>
+        <input [(ngModel)]="property.bedrooms" name="bedrooms" type="number" class="form-control" />
+      </div>
+    </div>
+
+    <div class="section-header mt-4 mb-3">✨ Amenities</div>
+    <app-amenities-selector [(selectedAmenities)]="property.amenityIds"></app-amenities-selector>
+
+    <div class="section-header mt-4 mb-3">📸 Upload Property Images</div>
+
+    <!-- Existing Images -->
+    <div *ngIf="existingImageUrls.length > 0" class="mb-3">
+      <div class="fw-semibold mb-2 text-secondary">Existing Images:</div>
+      <div class="preview-container d-flex flex-wrap gap-3">
+        <div *ngFor="let img of existingImageUrls" class="image-preview shadow-sm position-relative">
+          <img [src]="img.url" alt="Existing Image" />
+          <button type="button" class="btn btn-danger btn-sm delete-btn" (click)="deleteExistingImage(img.id)">
+            ✖
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload New -->
+    <div class="mb-3">
+      <input type="file" (change)="onFileSelected($event)" multiple class="form-control" accept="image/*" />
+      <small class="text-muted">You can select multiple new images.</small>
+    </div>
+
+    <!-- New Previews -->
+    <div *ngIf="previewUrls.length > 0" class="preview-container d-flex flex-wrap gap-3">
+      <div *ngFor="let preview of previewUrls" class="image-preview shadow-sm">
+        <img [src]="preview" />
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <button class="btn btn-gradient-animated px-5 py-2" type="submit" [disabled]="saving">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-arrow-repeat spin': saving,
+            'bi-plus-circle': !isEditMode && !saving,
+            'bi-save': isEditMode && !saving
+          }"
+        ></i>
+        {{ saving ? 'Saving...' : isEditMode ? 'Update Property' : 'Add Property' }}
+      </button>
+    </div>
+  </form>
+</div>

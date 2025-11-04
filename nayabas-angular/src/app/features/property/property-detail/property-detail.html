@@ -1,0 +1,76 @@
+<div class="container py-5" *ngIf="property">
+  <div class="row g-4">
+    <!-- Carousel -->
+    <div class="col-md-6">
+      <div id="carouselDetail{{ property.id }}" class="carousel slide carousel-fade" data-bs-ride="carousel"
+        data-bs-interval="4000">
+        <div class="carousel-inner">
+          <div class="carousel-item" *ngFor="let img of property.images || []; let i = index" [class.active]="i === 0">
+            <img [src]="getImageSrc(img.imageData)" alt="{{ property.title }}" class="img-fluid rounded" />
+          </div>
+
+          <div *ngIf="!property?.images?.length" class="text-center text-muted py-5 border rounded">
+            <span>No Image Available</span>
+          </div>
+        </div>
+
+        <button *ngIf="(property.images?.length || 0) > 1" class="carousel-control-prev" type="button"
+          [attr.data-bs-target]="'#carouselDetail' + property.id" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button *ngIf="(property.images?.length || 0) > 1" class="carousel-control-next" type="button"
+          [attr.data-bs-target]="'#carouselDetail' + property.id" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <div class="mt-4" *ngIf="property.amenities?.length">
+        <strong>Amenities:</strong>
+        <div class="mt-2">
+          <span *ngFor="let a of property.amenities" class="badge bg-success me-1 mb-1">{{ a.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Info + Actions -->
+    <div class="col-md-6">
+      <h2 class="fw-bold">{{ property.title }}</h2>
+      <p class="text-success fw-bold h4">Rs. {{ property.price | number }}</p>
+      <p><strong>Address:</strong> {{ property.address }}</p>
+      <p>{{ property.description }}</p>
+
+      <div *ngIf="authService.getUserRole() === 'CUSTOMER'" class="mt-4">
+        <h5 class="fw-bold">Schedule Meeting</h5>
+        <form (ngSubmit)="sendMeetingRequest()" #meetingForm="ngForm" class="meeting-form">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Date</label>
+              <input type="date" [(ngModel)]="meetingDate" name="date" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Time</label>
+              <input type="time" [(ngModel)]="meetingTime" name="time" class="form-control" required />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label>Message</label>
+            <textarea [(ngModel)]="customerMessage" name="message" rows="3" class="form-control"></textarea>
+          </div>
+          <button class="btn btn-gradient w-100 mt-2">Send Meeting Request</button>
+        </form>
+
+        <button class="btn btn-success w-100 mt-3" (click)="bookProperty()">Book Property</button>
+      </div>
+
+      <a routerLink="/" class="btn btn-outline-secondary mt-4 w-100">Back to List</a>
+    </div>
+  </div>
+</div>
+
+<div class="text-center my-5" *ngIf="loading">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div class="container" *ngIf="!property && error">
+  <div class="alert alert-danger mt-4">{{ error }}</div>
+</div>

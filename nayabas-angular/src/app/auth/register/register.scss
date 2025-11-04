@@ -1,0 +1,24 @@
+.preview {
+  max-width: 150px;
+  border-radius: 8px;
+  border: 2px solid #6C63FF;
+  box-shadow: 0 0 10px rgba(108, 99, 255, 0.3);
+  margin-top: 8px;
+  transition: transform 0.2s;
+}
+
+.preview:hover {
+  transform: scale(1.05);
+}
+
+.progress {
+  height: 8px;
+  border-radius: 10px;
+  background: #e6e6e6;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #6C63FF, #8E2DE2);
+  transition: width 0.3s ease-in-out;
+}

@@ -1,0 +1,58 @@
+.property-img {
+  height: 230px;
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.no-image {
+  font-style: italic;
+  color: #888;
+  background: #f7f7f7;
+  border-radius: 8px;
+  height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.meeting-form label {
+  font-weight: 600;
+  color: #333;
+}
+
+.meeting-form textarea,
+.meeting-form input {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.meeting-form input:focus,
+.meeting-form textarea:focus {
+  border-color: #4b6cb7;
+  box-shadow: 0 0 5px rgba(75, 108, 183, 0.3);
+}
+
+.btn-gradient {
+  background: linear-gradient(90deg, #4b6cb7, #182848);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(90deg, #182848, #4b6cb7);
+  box-shadow: 0 0 10px #4b6cb7;
+  transform: scale(1.03);
+}
+
+.carousel img {
+  border-radius: 10px;
+}

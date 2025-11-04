@@ -1,0 +1,69 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: #2c3e50;
+  color: #fff;
+  padding: 20px;
+}
+
+.sidebar .logo {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 300px !important;  // ✅ fixed height so chart is visible
+}
+
+
+.sidebar nav a {
+  display: block;
+  padding: 10px;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.sidebar nav a.active,
+.sidebar nav a:hover {
+  background: #34495e;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background: #f5f6fa;
+}
+
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.table img.thumb {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}

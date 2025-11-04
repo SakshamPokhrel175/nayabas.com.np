@@ -1,0 +1,28 @@
+.amenities-box {
+  background: #f8f9fa;
+  border: 1px solid #e1e1e1;
+  transition: 0.2s;
+  &:hover {
+    border-color: #b0c4de;
+  }
+}
+
+.amenity-option {
+  label {
+    font-size: 0.95rem;
+    color: #333;
+  }
+  input:checked + label {
+    font-weight: 600;
+    color: #0d6efd;
+  }
+}
+
+.custom-amenity {
+  input {
+    border-radius: 8px 0 0 8px;
+  }
+  button {
+    border-radius: 0 8px 8px 0;
+  }
+}

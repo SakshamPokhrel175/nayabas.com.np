@@ -1,0 +1,20 @@
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Recent Reviews</h2>
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col" *ngFor="let review of reviews">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <strong>{{ review.property }}</strong>
+          <span class="float-end small text-muted">{{ review.date }}</span>
+        </div>
+        <div class="card-body">
+          <div class="mb-2 d-flex align-items-center">
+            <span class="badge bg-primary me-2">{{ review.rating }}★</span>
+            <strong>{{ review.user }}</strong>
+          </div>
+          <div class="mb-2">{{ review.comment }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

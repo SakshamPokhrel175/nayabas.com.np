@@ -1,0 +1,26 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <form [formGroup]="form" class="card p-4 shadow" (ngSubmit)="submit()">
+      <h2 class="mb-3 text-center">Login</h2>
+
+      <div class="mb-3">
+        <label>Username</label>
+        <input type="text" formControlName="username" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" formControlName="password" class="form-control" />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+        Login
+      </button>
+
+      <div class="mt-2 text-center">
+        <a routerLink="/auth/register">Don't have an account?</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="container py-5">
+  <h2 class="mb-5 text-center fw-bold display-6 text-gradient">
+    Featured Properties
+  </h2>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger text-center mt-4 shadow-sm">
+    {{ error }}
+  </div>
+
+  <!-- Property Grid -->
+  <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="!loading && !error && properties.length">
+    <div class="col" *ngFor="let property of properties">
+      <div class="card h-100 border-0 shadow-lg property-card rounded-4">
+        <!-- Carousel -->
+        <div id="carousel{{ property.id }}" class="carousel slide carousel-fade" data-bs-ride="carousel">
+          <div class="carousel-inner rounded-top-4 overflow-hidden">
+            <div class="carousel-item" *ngFor="let img of property.images || []; let i = index" [class.active]="i === 0">
+              <img *ngIf="img?.imageData" [src]="getImageSrc(img.imageData)" alt="{{ property.title }}" class="d-block w-100 property-img" />
+            </div>
+            <div *ngIf="!property.images?.length" class="no-image d-flex justify-content-center align-items-center">
+              <i class="bi bi-image text-secondary fs-1 me-2"></i>
+              <span>No image</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Property Info -->
+        <div class="card-body p-4">
+          <h5 class="fw-bold text-dark mb-2">{{ property.title }}</h5>
+          <p class="text-muted small mb-1">
+            <i class="bi bi-geo-alt text-primary me-1"></i>{{ property.address }}
+          </p>
+          <h5 class="text-success fw-bold mb-3">Rs. {{ property.price | number }}</h5>
+
+          <div *ngIf="property.amenities?.length">
+            <strong class="text-secondary small">Amenities:</strong>
+            <div class="mt-2">
+              <span *ngFor="let a of property.amenities" class="badge bg-gradient me-1 mb-1">{{ a.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card-footer bg-transparent border-0 p-3 text-center">
+          <a [routerLink]="['/property', property.id]" class="btn btn-gradient w-100 rounded-pill fw-semibold mb-2">
+            <i class="bi bi-eye me-1"></i> View Details
+          </a>
+
+          <button class="btn btn-success w-100 rounded-pill fw-semibold mt-2"
+                  (click)="bookProperty(property)">
+            <i class="bi bi-calendar-check me-1"></i> Book Property
+          </button>
+
+          <button class="btn btn-primary w-100 rounded-pill fw-semibold mt-2"
+                  (click)="scheduleMeeting(property)">
+            <i class="bi bi-person-video3 me-1"></i> Send Meeting Request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Properties Found -->
+  <div *ngIf="!loading && !error && !properties.length" class="alert alert-info text-center mt-5 shadow-sm">
+    No properties found.
+  </div>
+</div>

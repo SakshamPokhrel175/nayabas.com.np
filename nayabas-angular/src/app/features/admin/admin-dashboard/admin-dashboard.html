@@ -1,0 +1,152 @@
+<div class="container-fluid mt-3">
+
+    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+
+  <!-- ====== Dashboard Stats ====== -->
+  <!-- Top Statistics Cards (clickable for user lists) -->
+  <div class="row mb-4">
+    <div class="col-md-3" *ngFor="let stat of stats" (click)="stat.key !== 'pendingVerifications' && showUserList(stat.key)">
+      <div class="card text-center shadow-sm cursor-pointer">
+        <div class="card-body">
+          <h5 class="card-title text-primary fw-bold">{{ stat.label }}</h5>
+          <p class="display-6">{{ stat.value }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ====== Earnings Chart ====== -->
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Monthly Earnings</h5>
+    </div>
+    <div class="card-body">
+      <canvas baseChart
+              [data]="earningsChartData"
+              [options]="earningsChartOptions"
+              [type]="'line'">
+      </canvas>
+      <div class="text-end mt-3 fw-bold">
+        Total Earnings: Rs. {{ totalEarnings | number }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Pending Sellers ====== -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-warning">
+      <h5 class="mb-0">Pending Seller Verifications</h5>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-striped mb-0" *ngIf="pendingVerifications.length > 0; else noPending">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Requested On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let seller of pendingVerifications">
+            <td>{{ seller.fullName }}</td>
+            <td>{{ seller.email }}</td>
+            <td>{{ seller.requestedAt | date: 'short' }}</td>
+            <td>
+              <button class="btn btn-sm btn-success me-2" (click)="approveSeller(seller.id)">Approve</button>
+              <button class="btn btn-sm btn-danger" (click)="rejectSeller(seller.id)">Reject</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #noPending>
+        <div class="p-3 text-center text-muted">No pending verifications</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- ====== Properties with Owner Info ====== -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">All Properties (with Owner Info)</h5>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-striped align-middle mb-0" *ngIf="properties.length > 0; else noProperties">
+        <thead class="table-light">
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>City</th>
+            <th>Price</th>
+            <th>Bedrooms</th>
+            <th>Owner</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of properties">
+            <td>
+              <img [src]="getImageSrc(property)"
+     alt="property"
+     width="80" height="60"
+     class="rounded shadow-sm" />
+            </td>
+            <td>{{ property.title }}</td>
+            <td>{{ property.city }}</td>
+            <td>Rs. {{ property.price | number }}</td>
+            <td>{{ property.bedrooms }}</td>
+            <td>
+              {{ property.owner?.fullName }}<br>
+              <small class="text-muted">{{ property.owner?.email }}</small>
+            </td>
+            <td>
+              <a [routerLink]="['/property', property.id]" class="btn btn-sm btn-info me-2">View</a>
+              <a [routerLink]="['/admin/edit-property', property.id]" class="btn btn-sm btn-warning me-2">Edit</a>
+              <button class="btn btn-sm btn-danger" (click)="deleteProperty(property.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #noProperties>
+        <div class="p-3 text-center text-muted">No properties found</div>
+      </ng-template>
+    </div>
+  </div>
+
+
+
+  <!-- ====== Modal for User Lists ====== -->
+  <div class="modal fade" id="userListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modalTitle }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped" *ngIf="modalUsers.length > 0; else noUsers">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of modalUsers">
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #noUsers>
+            <div class="text-center text-muted">No users found</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

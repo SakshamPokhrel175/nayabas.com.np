@@ -1,0 +1,216 @@
+<div class="container py-4">
+  <h2 class="mb-4 text-center">My Meetings</h2>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary"></div>
+  </div>
+  <div *ngIf="!loading && meetings.length === 0" class="alert alert-info text-center mt-3">
+    You have no meetings.
+  </div>
+  <div *ngIf="!loading && meetings.length">
+    <div class="table-responsive rounded shadow">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Property</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Message / Seller Note</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of meetings" [id]="'meeting-' + m.id" class="meeting-item">
+            <td>{{ m.id }}</td>
+            <td>{{ m.property?.title || 'Property' }}</td>
+            <td>{{ m.meetingDate }}</td>
+            <td>{{ m.meetingTime }}</td>
+
+            <td>
+              <span *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'" class="text-danger fw-bold me-1">
+                [New Time Proposed]
+              </span>
+              {{ m.customerMessage || '—' }}
+
+              <p *ngIf="m.sellerNote" class="fst-italic text-muted small mt-1">
+                **Seller Note:** {{ m.sellerNote }}
+              </p>
+            </td>
+            <td>
+              <span [ngClass]="{
+                        'badge bg-success': m.meetingStatus === 'SCHEDULED' || m.meetingStatus === 'CHAT_COMPLETED',
+                        
+                        'badge bg-warning text-dark': m.meetingStatus === 'PENDING',
+                        'badge bg-info text-dark': m.meetingStatus === 'PROPOSED_CHANGE',
+                        'badge bg-danger': m.meetingStatus === 'REJECTED'
+                    }">{{ m.meetingStatus }}</span>
+            </td>
+
+            <td class="text-nowrap">
+
+              <ng-container *ngIf="m.meetingStatus === 'SCHEDULED'">
+                <a *ngIf="m.chatRoomId" [routerLink]="['/chat', m.chatRoomId]" class="btn btn-sm btn-primary me-2">
+                  Launch Chat
+                </a>
+
+                <button *ngIf="!m.chatRoomId" class="btn btn-sm btn-outline-success" (click)="askToBook(m)">
+                  Book Now?
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="m.meetingStatus === 'CHAT_COMPLETED'">
+                <button class="btn btn-sm btn-success" (click)="askToBook(m)">
+                  Book Now!
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'">
+                <button class="btn btn-success btn-sm me-2" (click)="confirmChange(m)"
+                  [disabled]="actionInProgress">Confirm</button>
+                <button class="btn btn-danger btn-sm" (click)="reject(m, true)"
+                  [disabled]="actionInProgress">Reject</button>
+              </ng-container>
+
+              <ng-container *ngIf="m.meetingStatus === 'PENDING'">
+                <span class="text-muted small">Awaiting Seller</span>
+              </ng-container>
+            </td>
+
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="container py-4">
+  <h2 class="mb-4 text-center">My Meetings</h2>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary"></div>
+  </div>
+  <div *ngIf="!loading && meetings.length === 0" class="alert alert-info text-center mt-3">
+    You have no meetings.
+  </div>
+  <div *ngIf="!loading && meetings.length">
+    <div class="table-responsive rounded shadow">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Property</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Message / Seller Note</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of meetings" [id]="'meeting-' + m.id" class="meeting-item">
+            <td>{{ m.id }}</td>
+            <td>{{ m.property?.title || 'Property' }}</td>
+            <td>{{ m.meetingDate }}</td>
+            <td>{{ m.meetingTime }}</td>
+
+            <td>
+              <span *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'" class="text-danger fw-bold me-1">
+                [New Time Proposed]
+              </span>
+              {{ m.customerMessage || '—' }}
+
+              <p *ngIf="m.sellerNote" class="fst-italic text-muted small mt-1">
+                **Seller Note:** {{ m.sellerNote }}
+              </p>
+            </td>
+
+            <td>
+              <span [ngClass]="{
+                                'badge bg-success': m.meetingStatus === 'SCHEDULED',
+                                'badge bg-warning text-dark': m.meetingStatus === 'PENDING',
+                                'badge bg-info text-dark': m.meetingStatus === 'PROPOSED_CHANGE',
+                                'badge bg-danger': m.meetingStatus === 'REJECTED'
+                            }">{{ m.meetingStatus }}</span>
+            </td>
+
+            <td>
+              <ng-container *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'">
+                <button class="btn btn-success btn-sm me-2" (click)="confirmChange(m)"
+                  [disabled]="actionInProgress">Confirm</button>
+                <button class="btn btn-danger btn-sm" (click)="reject(m, true)"
+                  [disabled]="actionInProgress">Reject</button>
+              </ng-container>
+
+              <ng-container *ngIf="m.meetingStatus === 'PENDING'">
+                <span class="text-muted small">Awaiting Seller</span>
+              </ng-container>
+            </td>
+
+            <td>
+              <ng-container *ngIf="m.meetingStatus === 'SCHEDULED'">
+                <a [routerLink]="['/chat', m.chatRoomId]" class="btn btn-sm btn-primary">
+                  Launch Chat
+                </a>
+                <button class="btn btn-sm btn-outline-secondary ms-2" (click)="askToBook(m)">
+                  Book Now?
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'">
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->
+
+
+<!-- <div class="container py-4">
+  <h2 class="mb-4 text-center">My Meetings</h2>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary"></div>
+  </div>
+
+  <div *ngIf="!loading && meetings.length === 0" class="alert alert-info text-center mt-3">
+    You have no meetings.
+  </div>
+
+  <div *ngIf="!loading && meetings.length">
+    <div class="table-responsive rounded shadow">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Property</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Message</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of meetings" [id]="'meeting-' + m.id" class="meeting-item">
+            <td>{{ m.id }}</td>
+            <td>{{ m.property?.title || 'Property' }}</td>
+            <td>{{ m.meetingDate }}</td>
+            <td>{{ m.meetingTime }}</td>
+            <td>{{ m.customerMessage }}</td>
+            <td>
+              <span [ngClass]="{
+      'badge bg-success': m.meetingStatus === 'SCHEDULED',
+      'badge bg-warning text-dark': m.meetingStatus === 'PENDING',
+      'badge bg-danger': m.meetingStatus === 'REJECTED'
+    }">{{ m.meetingStatus }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->

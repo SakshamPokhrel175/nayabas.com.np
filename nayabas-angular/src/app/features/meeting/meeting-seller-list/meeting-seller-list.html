@@ -1,0 +1,71 @@
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Meeting Requests</h2>
+
+    <div *ngIf="loading" class="text-center my-4">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div *ngIf="!loading && meetings.length === 0" class="alert alert-info text-center">
+        No meeting requests yet.
+    </div>
+
+    <div *ngIf="!loading && meetings.length" class="list-group">
+        <div *ngFor="let m of meetings" id="meeting-{{m.id}}"
+            class="list-group-item mb-3 rounded shadow-sm d-flex gap-3 align-items-start meeting-item">
+            
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">{{ m.property?.title || 'Property' }}</h5>
+                        <small [class.fw-bold]="m.meetingStatus === 'PROPOSED_CHANGE'">
+                            {{ m.meetingDate }} • {{ m.meetingTime }}
+                        </small>
+                    </div>
+                    <div>
+                        <span class="badge" [ngClass]="{
+                            'bg-warning text-dark': m.meetingStatus === 'PENDING',
+                            'bg-info text-dark': m.meetingStatus === 'PROPOSED_CHANGE',
+                            'bg-success': m.meetingStatus === 'SCHEDULED',
+                            'bg-danger': m.meetingStatus === 'REJECTED'
+                          }">{{ m.meetingStatus }}</span>
+                    </div>
+                </div>
+
+                <p class="mb-1 mt-2"><strong>Customer:</strong> {{ m.customer?.fullName || m.customer?.username }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ m.customer?.email }}</p>
+                <p class="mb-1"><strong>Phone:</strong> {{ m.customer?.phoneNumber || 'N/A' }}</p>
+                <p class="mb-1 text-muted"><em>"{{ m.customerMessage }}"</em></p>
+                
+                <p *ngIf="m.sellerNote" class="mt-2 text-info small">
+                    **Your Last Proposal Note:** {{ m.sellerNote }}
+                </p>
+            </div>
+
+            <div class="d-flex flex-column align-items-end">
+                
+                <ng-container *ngIf="m.meetingStatus === 'PENDING'">
+                    <button class="btn btn-sm btn-success mb-2" (click)="accept(m)"
+                        [disabled]="actionInProgress">Accept</button>
+                    <button class="btn btn-sm btn-outline-danger mb-2" (click)="reject(m)"
+                        [disabled]="actionInProgress">Reject</button>
+                    
+                    <button class="btn btn-sm btn-info" (click)="openProposeModal(m)"
+                        [disabled]="actionInProgress">Propose New Time</button>
+                </ng-container>
+
+                <ng-container *ngIf="m.meetingStatus === 'PROPOSED_CHANGE'">
+                    <p class="text-muted small fw-bold">Awaiting Customer Confirmation...</p>
+                </ng-container>
+                
+                <ng-container *ngIf="m.meetingStatus === 'SCHEDULED'">
+                    <p class="text-success small fw-bold">Meeting Confirmed.</p>
+                </ng-container>
+                
+                <ng-container *ngIf="m.meetingStatus === 'REJECTED'">
+                    <p class="text-danger small fw-bold">Meeting Rejected.</p>
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+</div>
