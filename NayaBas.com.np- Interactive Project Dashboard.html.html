@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NayaBas.com.np - Interactive Project Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral -->
+    <!-- Application Structure Plan: A dashboard-style SPA with a fixed sidebar for navigation and a dynamic main content area. This structure allows users to jump directly to any section of the project plan (e.g., API, Schema) without scrolling, making information discovery quick and efficient. The interactive nature of the content views (diagrams, charts) is designed to make the dense technical information more digestible than a static document. -->
+    <!-- Visualization & Content Choices: 
+        - Project Overview: Goal: Inform -> Styled text cards -> Hover effects -> To present core concepts clearly -> Tailwind CSS.
+        - Key Features: Goal: Organize -> 3-column card layout for roles, HTML/CSS flow diagrams for processes -> Click/hover interactions -> To break down complex features into understandable parts -> Tailwind CSS & Vanilla JS.
+        - Technology Stack: Goal: Compare -> Doughnut Chart -> Interactive tooltips -> To show the composition of the stack visually -> Chart.js.
+        - Architecture: Goal: Organize -> HTML/CSS Diagrams -> Hover effects -> To illustrate the flow of data and requests clearly -> Tailwind CSS.
+        - Database Schema: Goal: Compare -> Horizontal Bar Chart -> Interactive tooltips showing fields -> To compare the relative complexity of data entities -> Chart.js.
+        - API Endpoints: Goal: Organize -> Interactive Accordion -> Click to expand/collapse -> To group related endpoints and prevent information overload -> Vanilla JS + Tailwind CSS.
+        - Security & Roadmap: Goal: Inform -> Styled list/card layouts -> Hover effects -> To clearly present security measures and future plans -> Tailwind CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3f3c3a;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #e7e5e4;
+            color: #1c1917;
+            transform: translateX(4px);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e7e5e4;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .accordion-header:hover {
+            background-color: #f1f5f9;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+        .api-method {
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+        }
+        .api-get { background-color: #2563eb; }
+        .api-post { background-color: #16a34a; }
+        .api-put { background-color: #f97316; }
+        .api-delete { background-color: #dc2626; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-white border-r border-stone-200 p-4 md:p-6 shrink-0">
+            <h1 class="text-2xl font-bold text-stone-800">NayaBas.com.np</h1>
+            <h2 class="text-sm text-stone-500 mb-8">Project Dashboard</h2>
+            <nav id="sidebar-nav" class="space-y-2">
+                <a href="#overview" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🏠</span> Overview
+                </a>
+                <a href="#features" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">✨</span> Key Features
+                </a>
+                <a href="#tech-stack" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">💻</span> Technology Stack
+                </a>
+                <a href="#architecture" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🏗️</span> Architecture
+                </a>
+                <a href="#schema" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🗃️</span> Database Schema
+                </a>
+                <a href="#api" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🔌</span> API Endpoints
+                </a>
+                <a href="#security" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🛡️</span> Security
+                </a>
+                <a href="#roadmap" class="sidebar-link flex items-center p-2 rounded-lg text-stone-600 font-medium">
+                    <span class="w-6 h-6 mr-3">🚀</span> Project Enhancements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-10">
+            <div id="content-container">
+                <!-- Overview Section -->
+                <section id="overview" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-2">Project Overview</h2>
+                    <p class="text-stone-600 mb-8">NayaBas.com.np (नयाँ बस - "New Dwelling/Stay") is a full-stack web application designed to simplify the process of finding and renting houses or flats in Nepal.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-3">Problem Statement</h3>
+                            <p class="text-stone-600">The traditional method of finding rental properties in Nepal often involves fragmented information, limited search options, and inefficient communication between owners and renters, leading to a time-consuming and frustrating experience.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-3">Our Solution</h3>
+                            <p class="text-stone-600">NayaBas.com.np provides a centralized, user-friendly platform that addresses these challenges through enhanced search, streamlined communication, and a secure environment for all user interactions.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Features Section -->
+                <section id="features" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Key Features</h2>
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-semibold mb-4">User Roles & Management</h3>
+                        <p class="text-stone-600 mb-6">The platform is built around three distinct user roles, each with a tailored set of permissions and functionalities to ensure a smooth and secure experience.</p>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="card p-6 rounded-lg">
+                                <h4 class="text-lg font-bold mb-2">👤 Customer (Renter)</h4>
+                                <ul class="list-disc list-inside text-stone-600 space-y-1">
+                                    <li>Search & filter properties</li>
+                                    <li>Request meetings/viewings</li>
+                                    <li>Create booking requests</li>
+                                    <li>View personal history</li>
+                                </ul>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h4 class="text-lg font-bold mb-2">🏠 Seller (Owner/Agent)</h4>
+                                <ul class="list-disc list-inside text-stone-600 space-y-1">
+                                    <li>List & manage properties</li>
+                                    <li>Provide detailed info & images</li>
+                                    <li>Confirm/reject bookings</li>
+                                    <li>Manage meeting requests</li>
+                                </ul>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h4 class="text-lg font-bold mb-2">⚙️ Admin</h4>
+                                <ul class="list-disc list-inside text-stone-600 space-y-1">
+                                    <li>Full system control</li>
+                                    <li>Manage users & properties</li>
+                                    <li>Oversee system settings</li>
+                                    <li>Resolve disputes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Booking & Meeting Flow</h3>
+                        <p class="text-stone-600 mb-6">A clear, status-driven process ensures both customers and sellers know the exact stage of their interaction, from initial request to final confirmation.</p>
+                        <div class="card p-6 rounded-lg">
+                            <div class="flex flex-col md:flex-row justify-around items-center space-y-4 md:space-y-0">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-2">📝</div>
+                                    <p class="font-semibold">1. Request</p>
+                                    <p class="text-sm text-stone-500">Customer submits a booking or meeting request.</p>
+                                </div>
+                                <div class="text-2xl text-stone-400 font-light">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl mb-2">🤔</div>
+                                    <p class="font-semibold">2. Review</p>
+                                    <p class="text-sm text-stone-500">Seller reviews the details and availability.</p>
+                                </div>
+                                <div class="text-2xl text-stone-400 font-light">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl mb-2">✅/❌</div>
+                                    <p class="font-semibold">3. Action</p>
+                                    <p class="text-sm text-stone-500">Seller confirms or rejects the request.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Technology Stack Section -->
+                <section id="tech-stack" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Technology Stack</h2>
+                    <p class="text-stone-600 mb-8 max-w-3xl mx-auto text-center">The project is built using a robust and modern full-stack architecture, choosing powerful and scalable technologies for each layer of the application.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="chart-container">
+                            <canvas id="techStackChart"></canvas>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="card p-4 rounded-lg flex items-center">
+                                <span class="text-2xl mr-4">🅰️</span>
+                                <div>
+                                    <h4 class="font-bold">Frontend: Angular</h4>
+                                    <p class="text-sm text-stone-600">A powerful framework for building dynamic and interactive Single-Page Applications (SPAs).</p>
+                                </div>
+                            </div>
+                             <div class="card p-4 rounded-lg flex items-center">
+                                <span class="text-2xl mr-4">🍃</span>
+                                <div>
+                                    <h4 class="font-bold">Backend: Spring Boot</h4>
+                                    <p class="text-sm text-stone-600">A Java-based framework for creating scalable, secure, and high-performance RESTful APIs.</p>
+                                </div>
+                            </div>
+                             <div class="card p-4 rounded-lg flex items-center">
+                                <span class="text-2xl mr-4">🐬</span>
+                                <div>
+                                    <h4 class="font-bold">Database: MySQL</h4>
+                                    <p class="text-sm text-stone-600">A reliable and widely-used relational database for structured data storage.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Architecture Section -->
+                <section id="architecture" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Application Architecture</h2>
+                     <p class="text-stone-600 mb-8 max-w-3xl mx-auto text-center">The system follows a standard client-server model with a layered backend architecture, promoting separation of concerns and maintainability.</p>
+                    <div class="grid lg:grid-cols-2 gap-10">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4 text-center">High-Level Flow</h3>
+                            <div class="card p-6 rounded-lg space-y-4">
+                                <div class="bg-stone-100 p-4 rounded-lg text-center">
+                                    <p class="font-bold">Client (Angular Web App)</p>
+                                    <p class="text-sm text-stone-500">User Interface</p>
+                                </div>
+                                <div class="text-center text-2xl text-stone-400">↓</div>
+                                <div class="bg-stone-100 p-4 rounded-lg text-center">
+                                    <p class="font-bold">Spring Boot Backend</p>
+                                    <p class="text-sm text-stone-500">REST APIs, Business Logic, Security</p>
+                                </div>
+                                <div class="text-center text-2xl text-stone-400">↓</div>
+                                <div class="bg-stone-100 p-4 rounded-lg text-center">
+                                    <p class="font-bold">MySQL Database</p>
+                                    <p class="text-sm text-stone-500">Data Storage & Persistence</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4 text-center">Backend Layers</h3>
+                            <div class="card p-6 rounded-lg space-y-2">
+                                <div class="border border-blue-300 bg-blue-50 p-3 rounded-lg">
+                                    <p class="font-semibold text-blue-800">Controller Layer</p>
+                                    <p class="text-sm text-blue-600">Handles HTTP requests & API endpoints.</p>
+                                </div>
+                                <div class="border border-green-300 bg-green-50 p-3 rounded-lg">
+                                    <p class="font-semibold text-green-800">Service Layer</p>
+                                    <p class="text-sm text-green-600">Contains core business logic & transactions.</p>
+                                </div>
+                                <div class="border border-purple-300 bg-purple-50 p-3 rounded-lg">
+                                    <p class="font-semibold text-purple-800">Repository Layer</p>
+                                    <p class="text-sm text-purple-600">Manages data persistence & queries.</p>
+                                </div>
+                                <div class="border border-orange-300 bg-orange-50 p-3 rounded-lg">
+                                    <p class="font-semibold text-orange-600">Security Layer</p>
+                                    <p class="text-sm text-orange-600">Handles authentication & authorization.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Database Schema Section -->
+                <section id="schema" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Database Schema</h2>
+                    <p class="text-stone-600 mb-8 max-w-3xl mx-auto text-center">The database is designed with normalized entities to ensure data integrity and efficient relationships. The chart below shows the relative complexity of each core entity based on its number of fields.</p>
+                    <div class="card p-6 rounded-lg">
+                         <div class="chart-container h-96 md:h-[450px] max-w-4xl">
+                            <canvas id="schemaChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- API Endpoints Section -->
+                <section id="api" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">API Endpoints</h2>
+                    <p class="text-stone-600 mb-8 max-w-3xl">The backend exposes a set of RESTful API endpoints for the frontend to consume. Endpoints are grouped by functionality and secured based on user roles.</p>
+                    <div id="api-accordion" class="space-y-2">
+                        <!-- Accordion items will be injected by JS -->
+                    </div>
+                </section>
+                
+                <!-- Security Section -->
+                <section id="security" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Security Implementation</h2>
+                    <p class="text-stone-600 mb-8 max-w-3xl">Security is a core component of the application, implemented using Spring Security to protect data and control access.</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="card p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-2">JWT Authentication</h4>
+                            <p class="text-stone-600">Users receive a secure JSON Web Token upon login, which is used to authenticate all subsequent API requests.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-2">Role-Based Access (RBAC)</h4>
+                            <p class="text-stone-600">Functionalities are restricted based on user roles (Admin, Customer, Seller), ensuring users can only perform authorized actions.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-2">Ownership Checks</h4>
+                            <p class="text-stone-600">Users can only manage their own properties, bookings, or meetings, preventing unauthorized data modification.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Roadmap Section -->
+                <section id="roadmap" class="content-section">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6">Project Enhancements</h2>
+                    <p class="text-stone-600 mb-8 max-w-3xl">This project is designed for scalability. The features below have been **successfully implemented** in the current version, with others planned for the future.</p>
+                    
+                    <h3 class="text-2xl font-bold text-stone-800 mb-4">Implemented Features</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                         <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">💬</span>
+                            <div>
+                                <h4 class="font-bold">Real-time Chat</h4>
+                                <p class="text-sm text-stone-600">Direct communication between customers and sellers.</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">🔔</span>
+                            <div>
+                                <h4 class="font-bold">Notifications</h4>
+                                <p class="text-sm text-stone-600">Email/SMS alerts for booking and meeting updates.</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">📊</span>
+                            <div>
+                                <h4 class="font-bold">Admin Dashboard</h4>
+                                <p class="text-sm text-stone-600">A dedicated interface for administrative tasks.</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">⭐</span>
+                            <div>
+                                <h4 class="font-bold">Review & Rating System</h4>
+                                <p class="text-sm text-stone-600">Allow customers to rate and review properties.</p>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">🗺️</span>
+                            <div>
+                                <h4 class="font-bold">Advanced Mapping</h4>
+                                <p class="text-sm text-stone-600">Interactive maps for property search and navigation.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold text-stone-800 mb-4">Future Roadmap</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">💳</span>
+                            <div>
+                                <h4 class="font-bold">Payment Gateway</h4>
+                                <p class="text-sm text-stone-600">Secure online payments for booking deposits.</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">🤖</span>
+                            <div>
+                                <h4 class="font-bold">AI Chatbot</h4>
+                                <p class="text-sm text-stone-600">An intelligent assistant to help users with questions and navigation.</p>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">📈</span>
+                            <div>
+                                <h4 class="font-bold">Dynamic Pricing</h4>
+                                <p class="text-sm text-stone-600">Suggest optimal rental prices based on market data and demand.</p>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">💰</span>
+                            <div>
+                                <h4 class="font-bold">User Wallet System</h4>
+                                <p class="text-sm text-stone-600">A secure in-app wallet for managing booking payments and refunds.</p>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg flex items-start">
+                            <span class="text-2xl mr-4 pt-1">🔐</span>
+                            <div>
+                                <h4 class="font-bold">Enhanced Security</h4>
+                                <p class="text-sm text-stone-600">Implement features like Two-Factor Authentication (2FA) and biometric login.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const contentContainer = document.getElementById('content-container');
+            const sections = contentContainer.querySelectorAll('.content-section');
+            const links = sidebarNav.querySelectorAll('.sidebar-link');
+
+            const apiData = [
+                {
+                    category: 'Authentication & User Management',
+                    endpoints: [
+                        { method: 'POST', path: '/api/auth/register', desc: 'Register a new user (Customer or Seller).', role: 'Public' },
+                        { method: 'POST', path: '/api/auth/login', desc: 'Authenticate a user.', role: 'Public' },
+                        { method: 'GET', path: '/api/users/{userId}', desc: 'Get user profile by ID.', role: 'Authenticated' },
+                        { method: 'PUT', path: '/api/users/{userId}', desc: 'Update user profile.', role: 'Owner/Admin' },
+                    ]
+                },
+                {
+                    category: 'Property Management',
+                    endpoints: [
+                        { method: 'POST', path: '/api/properties', desc: 'Create a new property listing.', role: 'Seller' },
+                        { method: 'GET', path: '/api/properties', desc: 'Get all properties with search/filtering.', role: 'Public' },
+                        { method: 'GET', path: '/api/properties/{propertyId}', desc: 'Get a single property by ID.', role: 'Public' },
+                        { method: 'PUT', path: '/api/properties/{propertyId}', desc: 'Update an existing property.', role: 'Owner/Admin' },
+                        { method: 'DELETE', path: '/api/properties/{propertyId}', desc: 'Delete a property.', role: 'Owner/Admin' },
+                    ]
+                },
+                {
+                    category: 'Booking & Meeting Management',
+                    endpoints: [
+                        { method: 'POST', path: '/api/bookings', desc: 'Create a new booking request.', role: 'Customer' },
+                        { method: 'PUT', path: '/api/bookings/{bookingId}/status', desc: 'Update the status of a booking.', role: 'Seller' },
+                        { method: 'POST', path: '/api/meetings', desc: 'Request a meeting/viewing.', role: 'Customer' },
+                        { method: 'PUT', path: '/api/meetings/{meetingId}/status', desc: 'Update meeting request status.', role: 'Seller' },
+                    ]
+                }
+            ];
+
+            function buildApiAccordion() {
+                const accordionContainer = document.getElementById('api-accordion');
+                let html = '';
+                apiData.forEach((group, index) => {
+                    html += `
+                        <div class="border border-stone-200 rounded-lg bg-white">
+                            <div class="accordion-header p-4 flex justify-between items-center" data-index="${index}">
+                                <h3 class="font-semibold text-lg">${group.category}</h3>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="p-4 border-t border-stone-200 space-y-3">
+                    `;
+                    group.endpoints.forEach(ep => {
+                        html += `
+                            <div class="p-3 bg-stone-50 rounded-md">
+                                <div class="flex items-center space-x-3 mb-1">
+                                    <span class="api-method api-${ep.method.toLowerCase()}">${ep.method}</span>
+                                    <p class="font-mono text-sm text-stone-700">${ep.path}</p>
+                                </div>
+                                <p class="text-sm text-stone-600 ml-2">${ep.desc} <span class="font-semibold text-stone-500">(Role: ${ep.role})</span></p>
+                            </div>
+                        `;
+                    });
+                    html += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                accordionContainer.innerHTML = html;
+            }
+
+            function handleNavigation(hash) {
+                if (!hash) {
+                    hash = '#overview';
+                }
+                
+                links.forEach(link => {
+                    if (link.getAttribute('href') === hash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                sections.forEach(section => {
+                    if ('#' + section.id === hash) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+                
+                // Initialize charts only when their section is active
+                if (hash === '#tech-stack' && !window.techStackChartInstance) {
+                    initTechStackChart();
+                }
+                if (hash === '#schema' && !window.schemaChartInstance) {
+                    initSchemaChart();
+                }
+            }
+            
+            sidebarNav.addEventListener('click', function(e) {
+                if (e.target.closest('.sidebar-link')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.sidebar-link');
+                    const hash = link.getAttribute('href');
+                    window.location.hash = hash;
+                }
+            });
+
+            window.addEventListener('hashchange', () => handleNavigation(window.location.hash));
+            
+            document.getElementById('api-accordion').addEventListener('click', function(e) {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(-180deg)';
+                    }
+                }
+            });
+
+            function initTechStackChart() {
+                const ctx = document.getElementById('techStackChart').getContext('2d');
+                window.techStackChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Frontend (Angular)', 'Backend (Spring Boot)', 'Database (MySQL)'],
+                        datasets: [{
+                            label: 'Technology Stack',
+                            data: [33.3, 33.3, 33.3],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.7)',
+                                'rgba(34, 197, 94, 0.7)',
+                                'rgba(59, 130, 246, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(59, 130, 246, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function initSchemaChart() {
+                const ctx = document.getElementById('schemaChart').getContext('2d');
+                const schemaData = {
+                    'User': 5,
+                    'Property': 15,
+                    'PropertyImage': 4,
+                    'Amenity': 2,
+                    'Booking': 9,
+                    'Meeting': 9,
+                    'Review': 6
+                };
+                window.schemaChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(schemaData),
+                        datasets: [{
+                            label: 'Number of Fields',
+                            data: Object.values(schemaData),
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                            title: {
+                                display: true,
+                                text: 'Relative Complexity of Database Entities'
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` Fields: ${context.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            buildApiAccordion();
+            handleNavigation(window.location.hash);
+        });
+    </script>
+</body>
+</html>
