@@ -1,6 +1,8 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080'
+
+  apiUrl: ''   //new changee
+  // apiUrl: 'http://localhost:8080'
   // apiUrl: 'http://192.168.165.62:8080'  // ✅ Use your laptop IP
 
   
@@ -12,3 +14,6 @@ export const environment = {
 
 
 //ng serve --host 0.0.0.0
+
+
+//ng serve --host 0.0.0.0 --proxy-config proxy.conf.json
