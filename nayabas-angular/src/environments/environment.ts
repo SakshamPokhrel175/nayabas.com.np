@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://52.66.212.34:8080'
+  apiUrl: 'https://52.66.212.34'
 };
 
   //ng serve --host 0.0.0.0
