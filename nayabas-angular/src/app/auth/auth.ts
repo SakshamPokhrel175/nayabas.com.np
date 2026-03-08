@@ -38,7 +38,8 @@ export interface JwtResponse {
 
 @Injectable({ providedIn: 'root' })
 export class Auth {
-  private baseUrl = `${environment.apiUrl}/api/auth`;
+ // private baseUrl = `${environment.apiUrl}/api/auth`;
+  private baseUrl = `${environment.apiUrl}/auth`;
   public isLoggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
   public userRole$ = new BehaviorSubject<UserRole | null>(this.computeUserRole());
 
